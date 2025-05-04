@@ -1,10 +1,19 @@
 (ns gui.counter)
 
+(defn perform-action
+  [state [action]]
+  (condp = action
+    ::inc-number  [[:effect/assoc-in [:number] (inc (:number state))]]
+    ::reset [[:effect/assoc-in [:number] 0]]
+    nil))
+
 (defn counter-ui
   [state]
-  [:div.m-8
+  [:div
    [:h1.text-lg "Contador"]
-   [:div.flex.gap-4.items-center
-    [:div "El número es " (:number state)]
+   [:div.m-2 "El número es " (:number state)]
+   [:div.flex.gap-4.items-center 
     [:button.btn {:on {:click [[::inc-number]]}}
-     "Contar!"]]])
+     "Contar!"]
+    [:button.btn {:on {:click [[::reset]]}}
+     "Resetear!"]]])
