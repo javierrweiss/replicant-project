@@ -6,3 +6,4 @@ node_modules
 .lsp
 .portal
 .shadow-cljs
+.calva
