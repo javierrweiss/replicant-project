@@ -58,3 +58,96 @@ clj꞉user꞉> 
 clj꞉user꞉> 
 ; [:app] Compiling ...
 ; [:app] Build completed. (119 files, 1 compiled, 0 warnings, 0,21s)
+nil
+clj꞉gui.core꞉> 
+nil
+clj꞉guis.dev꞉> 
+; [:app] Compiling ...
+; [:app] Build completed. (133 files, 1 compiled, 0 warnings, 0,16s)
+; [:app] Compiling ...
+; [:app] Build completed. (133 files, 1 compiled, 0 warnings, 0,13s)
+; [:app] Compiling ...
+; [:app] Build completed. (134 files, 3 compiled, 0 warnings, 0,17s)
+; [:app] Compiling ...
+; [:app] Build completed. (134 files, 2 compiled, 1 warnings, 0,88s)
+; 
+; ------ WARNING #1 - :undeclared-var --------------------------------------------
+;  File: /home/jrivero/replicant-project/src/gui/core.cljs:7:31
+; --------------------------------------------------------------------------------
+;    4 | 
+;    5 | (defn render-ui
+;    6 |   []
+;    7 |   (r/render js/document.body (counter/counter-ui)))
+; -------------------------------------^------------------------------------------
+;  Use of undeclared Var gui.counter/counter-ui
+; --------------------------------------------------------------------------------
+; [:app] Compiling ...
+; [:app] Build completed. (134 files, 2 compiled, 1 warnings, 0,11s)
+; 
+; ------ WARNING #1 - :fn-arity --------------------------------------------------
+;  File: /home/jrivero/replicant-project/src/gui/core.cljs:7:30
+; --------------------------------------------------------------------------------
+;    4 | 
+;    5 | (defn render-ui
+;    6 |   []
+;    7 |   (r/render js/document.body (counter/counter-ui)))
+; ------------------------------------^-------------------------------------------
+;  Wrong number of args (0) passed to gui.counter/counter-ui
+; --------------------------------------------------------------------------------
+#'guis.dev/store
+clj꞉guis.dev꞉> 
+; [:app] Compiling ...
+; [:app] Build completed. (134 files, 1 compiled, 3 warnings, 0,18s)
+; 
+; ------ WARNING #1 - :fn-arity --------------------------------------------------
+;  File: /home/jrivero/replicant-project/src/gui/core.cljs:7:30
+; --------------------------------------------------------------------------------
+;    4 | 
+;    5 | (defn render-ui
+;    6 |   []
+;    7 |   (r/render js/document.body (counter/counter-ui)))
+; ------------------------------------^-------------------------------------------
+;  Wrong number of args (0) passed to gui.counter/counter-ui
+; --------------------------------------------------------------------------------
+; 
+; ------ WARNING #2 - :fn-arity --------------------------------------------------
+;  File: /home/jrivero/replicant-project/dev/guis/dev.cljs:8:3
+; --------------------------------------------------------------------------------
+;    5 | 
+;    6 | (defn main
+;    7 |   []
+;    8 |   (render-ui store)
+; ---------^----------------------------------------------------------------------
+;  Wrong number of args (1) passed to gui.core/render-ui
+; --------------------------------------------------------------------------------
+;    9 |   (println "Loaded!"))
+;   10 | 
+;   11 | (defn ^:dev/after-load reload
+;   12 |   []
+; --------------------------------------------------------------------------------
+; 
+; ------ WARNING #3 - :fn-arity --------------------------------------------------
+;  File: /home/jrivero/replicant-project/dev/guis/dev.cljs:13:3
+; --------------------------------------------------------------------------------
+;   10 | 
+;   11 | (defn ^:dev/after-load reload
+;   12 |   []
+;   13 |   (render-ui store)
+; ---------^----------------------------------------------------------------------
+;  Wrong number of args (1) passed to gui.core/render-ui
+; --------------------------------------------------------------------------------
+;   14 |   (println "Reloaded!")) 
+;   15 | 
+; --------------------------------------------------------------------------------
+; [:app] Compiling ...
+; [:app] Build completed. (134 files, 2 compiled, 0 warnings, 0,18s)
+; [:app] Compiling ...
+; [:app] Build completed. (134 files, 2 compiled, 0 warnings, 0,13s)
+; [:app] Compiling ...
+; [:app] Build completed. (134 files, 2 compiled, 0 warnings, 0,13s)
+; [:app] Compiling ...
+; [:app] Build completed. (134 files, 2 compiled, 0 warnings, 0,23s)
+; [:app] Compiling ...
+; [:app] Build completed. (134 files, 2 compiled, 0 warnings, 0,30s)
+; [:app] Compiling ...
+; [:app] Build completed. (134 files, 1 compiled, 0 warnings, 0,26s)

@@ -1,9 +1,14 @@
-(ns guis.dev)
+(ns guis.dev
+  (:require [gui.core :refer [init]]))
+
+(def store (atom {:number 0}))
 
 (defn main
   []
+  (init store)
   (println "Loaded!"))
 
 (defn ^:dev/after-load reload
- []
- (println "Reloaded!")) 
+  []
+  (init store)
+  (println "Reloaded!")) 
