@@ -1,4 +1,4 @@
-(ns gui.layout)
+(ns guis.layout)
 
 (defn tab-bar [current-view views]
   [:div.tabs.tabs-box.mb-4 {:role "tablist"}

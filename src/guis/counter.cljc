@@ -1,4 +1,4 @@
-(ns gui.counter)
+(ns guis.counter)
 
 (defn perform-action
   [state [action]]

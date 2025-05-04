@@ -1,5 +1,5 @@
 (ns guis.dev
-  (:require [gui.core :refer [init]]))
+  (:require [guis.core :refer [init]]))
 
 (def store (atom {:number 0}))
 

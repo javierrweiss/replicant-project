@@ -1,7 +1,9 @@
-(ns gui.core
+(ns guis.core
   (:require [replicant.dom :as r]
-            [gui.counter :as counter]
-            [gui.layout :as layout]))
+            [guis.counter :as counter]
+            [guis.layout :as layout]
+            [guis.temperature :as temperature]
+            [clojure.walk :as walk]))
 
 (def views
   [{:id :counter
@@ -20,6 +22,7 @@
      (layout/tab-bar current-view views)
      (case current-view
        :counter (counter/counter-ui state)
+       :temperatures (temperature/temperature-ui state)
        [:h1.text-lg "No disponible"])]))
 
 (defn process-effect 
@@ -33,18 +36,30 @@
    (fn [action]
      (prn (first action) (rest action))
      (or (counter/perform-action state action)
+         (temperature/perform-action state action)
          (case (first action)
            :action/assoc-in
            [(into [:effect/assoc-in] (rest action))]
            (prn "Acción desconocida"))))
    event-data))
 
+(defn interpolate
+  [event data]
+  (walk/postwalk 
+   (fn [x]
+     (case x
+       :event.target/value-as-number (some-> event .-target .-valueAsNumber) 
+       x))
+   data))
+
 (defn init [store]
   (add-watch store ::render (fn [_ _ _ new-state]
                               (r/render js/document.body (render-ui new-state))))
-  (r/set-dispatch! 
-   (fn [_ event-data]
-     (->> (perform-actions @store event-data)
+  (r/set-dispatch!
+   (fn [{:replicant/keys [dom-event]} event-data]
+     (js/console.log dom-event)
+     (->> (interpolate dom-event event-data)
+          (perform-actions @store)
           (run! #(process-effect store %)))))
-  
+
   (swap! store assoc ::loaded-at (.getTime (js/Date.))))
