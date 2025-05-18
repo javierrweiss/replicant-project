@@ -3,13 +3,16 @@
             [guis.counter :as counter]
             [guis.layout :as layout]
             [guis.temperature :as temperature]
+            [guis.flights :as flights]
             [clojure.walk :as walk]))
 
 (def views
   [{:id :counter
     :text "Counter"}
    {:id :temperatures
-    :text "Temperatures"}])
+    :text "Temperatures"}
+   {:id :flights
+    :text "Flights"}])
 
 (defn get-current-view
   [state]
@@ -23,6 +26,7 @@
      (case current-view
        :counter (counter/counter-ui state)
        :temperatures (temperature/temperature-ui state)
+       :flights (flights/flights-ui state)
        [:h1.text-lg "No disponible"])]))
 
 (defn process-effect 
