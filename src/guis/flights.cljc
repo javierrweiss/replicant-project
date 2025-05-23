@@ -33,25 +33,31 @@
                              (= :one-way flight-type) {:value (:now state) :enabled? false :valid? true}
                              (= :roundtrip flight-type) {:value (or return-date (:value departure-date) now) :enabled? true :valid? true}
                              :else (throw (ex-info "Estado ilegal" {:estado state}))))
-                         (catch Exception e {:valid? false
+                         (catch Exception e {:valid? (when (= :roundtrip flight-type) false)
                                              :value nil
                                              :error e}))
                        :cljs
                        (try
-                         (let [now (t/date (:now state))
-                               return-date (t/date (::return-date state))]
+                         (let [now (when (:now state) (t/date (:now state)))
+                               return-date (when (::return-date state) (t/date (::return-date state)))]
                            (cond
-                             (= :one-way flight-type) {:value (:now state) :enabled? false}
-                             (= :roundtrip flight-type) {:value (or return-date (:value departure-date) now) :enabled? true}
+                             (= :one-way flight-type) {:value (:now state) :enabled? false :valid? true}
+                             (= :roundtrip flight-type) {:value (or return-date (:value departure-date) now) :enabled? true :valid? true}
                              :else (throw (ex-info "Estado ilegal" {:estado state}))))
-                         (catch js/Error e {:valid? false
+                         (catch js/Error e {:valid? (when (= :roundtrip flight-type) false)
                                             :value nil
-                                            :error e})))]
+                                            :error e})))
+        button-enabled? (let [both-valid (and (:valid? departure-date) (:valid? return-date) (:enabled? return-date))
+                              no-contradiction (when both-valid (t/> (:value return-date) (:value departure-date)))]
+                          (cond
+                            (and (= :one-way flight-type) (:valid? departure-date)) true
+                            (and (= :roundtrip flight-type) both-valid no-contradiction) true
+                            :else false))]
     {::type flight-type
      ::departure-date departure-date
      ::return-date return-date
-     ::button {:enabled? (every? true? [(:valid? departure-date) (:valid? return-date)])}}))
-
+     ::button {:enabled? button-enabled?}}))
+  
 (defn perform-action
   [state [action & args]])
 
