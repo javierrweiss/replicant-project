@@ -12,3 +12,8 @@
   []
   (init store)
   (println "Reloaded!")) 
+
+(comment
+  (prn @store)
+   
+  :rcf)

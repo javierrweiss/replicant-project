@@ -4,7 +4,8 @@
             [guis.layout :as layout]
             [guis.temperature :as temperature]
             [guis.flights :as flights]
-            [clojure.walk :as walk]))
+            [clojure.walk :as walk]
+            [tick.core :as t]))
 
 (def views
   [{:id :counter
@@ -52,13 +53,16 @@
   (walk/postwalk 
    (fn [x]
      (case x
-       :event.target/value-as-number (some-> event .-target .-valueAsNumber) 
+       :event.target/value (some-> event .-target .-value)
+       :event.target/value-as-number (some-> event .-target .-valueAsNumber)
+       :event.target/value-as-keyword (some-> event .-target .-value keyword)
        x))
    data))
 
 (defn init [store]
   (add-watch store ::render (fn [_ _ _ new-state]
-                              (r/render js/document.body (render-ui new-state))))
+                              (r/render js/document.body (render-ui (assoc new-state :now (t/date))))))
+
   (r/set-dispatch!
    (fn [{:replicant/keys [dom-event]} event-data]
      (js/console.log dom-event)

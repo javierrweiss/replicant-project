@@ -37,7 +37,7 @@ You can configure this with the setting:
 ; 
 
 ; Starting Jack-in: (cd /home/jrivero/replicant-project; clojure -Sdeps '{:deps {nrepl/nrepl {:mvn/version,"1.3.1"},cider/cider-nrepl {:mvn/version,"0.55.4"}}}' -M:dev -m nrepl.cmdline --middleware "[cider.nrepl/cider-middleware shadow.cljs.devtools.server.nrepl/middleware]")
-; Using host:port localhost:40629 ...
+; Using host:port localhost:41855 ...
 ; Hooking up nREPL sessions ...
 ; Connected session: clj
 ; Evaluating code from settings: 'calva.autoEvaluateCode.onConnect.clj'
@@ -49,7 +49,7 @@ clj꞉user꞉> 
 ; shadow-cljs - HTTP server available at http://localhost:8090
 ; [:app] Configuring build.
 ; [:app] Compiling ...
-; [:app] Build completed. (179 files, 1 compiled, 0 warnings, 9,80s)
+; [:app] Build completed. (179 files, 1 compiled, 0 warnings, 6,37s)
 ; Cljs builds started
 ; Connected session: cljs, repl: :app
 ; TIPS: You can choose which REPL to use (clj or cljs):
@@ -68,212 +68,309 @@ cljs꞉guis.flights-tests꞉> 
 ; 
 ; Testing guis.flights-tests
 ; 
-; FAIL in (get-form-state-test) (:30:9)
-; Defaults to today for return date
-; expected: (= (-> (flights/get-form-state {:now (t/date "2025-07-05")}) :guis.flights/return-date :value) (. java.time.LocalDate parse "2025-07-05"))
-;   actual: (not (= nil #time/date "2025-07-05"))
-; 
-; FAIL in (get-form-state-test) (:35:9)
-; Uses entered return date
-; expected: (= (-> (flights/get-form-state {:guis.flights/return-date (. java.time.LocalDate parse "2025-12-01"), :guis.flights/type :roundtrip}) :guis.flights/return-date :value) (. java.time.LocalDate parse "2025-12-01"))
-;   actual: (not (= nil #time/date "2025-12-01"))
-; 
-; FAIL in (get-form-state-test) (:41:9)
-; Defaults return date to selected departure date
-; expected: (= (-> {:now (. java.time.LocalDate parse "2025-10-10"), :guis.flights/type :roundtrip, :guis.flights/departure-date (. java.time.LocalDate parse "2025-12-01")} flights/get-form-state :guis.flights/return-date :value) (. java.time.LocalDate parse "2025-12-01"))
-;   actual: (not (= nil #time/date "2025-12-01"))
-; 
-; FAIL in (get-form-state-test) (:53:9)
-; Defaults return date to disabled
-; expected: (false? (-> {:now (. java.time.LocalDate parse "2025-05-18")} flights/get-form-state :guis.flights/return-date :enabled?))
-;   actual: (not (false? nil))
-; 
-; FAIL in (get-form-state-test) (:58:9)
-; Return date is enabled if and only if flight type is roundtrip
-; expected: (true? (-> {:now (. java.time.LocalDate parse "2025-05-18"), :guis.flights/type :roundtrip} flights/get-form-state :guis.flights/return-date :enabled?))
-;   actual: (not (true? nil))
-; 
-; FAIL in (get-form-state-test) (:72:9)
-; Does not mark invalid return date for one-way flights
-; expected: (nil? (-> {:guis.flights/return-date "2025-12", :guis.flights/type :one-way} flights/get-form-state :guis.flights/return-date :valid?))
-;   actual: (not (nil? false))
-; 
-; Ran 1 tests containing 14 assertions.
-; 6 failures, 0 errors.
+; Ran 1 tests containing 15 assertions.
+; 0 failures, 0 errors.
 nil
 cljs꞉guis.flights-tests꞉> 
-{:guis.flights/type :one-way, :guis.flights/departure-date {:value #time/date "2025-07-05", :valid? true}, :guis.flights/return-date {:valid? false, :value nil, :error #object[Error Error: No protocol method IExtraction.date defined for type null: ]}, :guis.flights/button {:enabled? false}}
-cljs꞉guis.flights-tests꞉> 
-nil
-; 
-; ------ REPL Error while processing ---------------------------------------------
-; #dbg
-; (defn get-form-state [state]
-;   (let [flight-type (if-let [t (::type state)]
-;                       t
-;                       :one-way)
-;         departure-date #?(:clj
-;                           (try
-;                             (if-let [d (::departure-date state)]
-;                               {:value (t/date d)
-;                                :valid? true}
-;                               {:value (t/date (:now state))
-;                                :valid? true})
-;                             (catch Exception e {:valid? false
-;                                                 :value nil
-;                                                 :error e}))
-;                           :cljs
-;                           (try
-;                             (if-let [d (::departure-date state)]
-;                               {:value (t/date d)
-;                                :valid? true}
-;                               {:value (t/date (:now state))
-;                                :valid? true})
-;                             (catch js/Error e {:valid? false
-;                                                :value nil
-;                                                :error e})))
-;         return-date #?(:clj
-;                        (try
-;                          (let [now (when (:now state) (t/date (:now state)))
-;                                return-date (when (::return-date state) (t/date (::return-date state)))]
-;                            (cond
-;                              (= :one-way flight-type) {:value (:now state) :enabled? false :valid? true}
-;                              (= :roundtrip flight-type) {:value (or return-date (:value departure-date) now) :enabled? true :valid? true}
-;                              :else (throw (ex-info "Estado ilegal" {:estado state}))))
-;                          (catch Exception e {:valid? false
-;                                              :value nil
-;                                              :error e}))
-;                        :cljs
-;                        (try
-;                          (let [now (t/date (:now state))
-;                                return-date (t/date (::return-date state))]
-;                            (cond
-;                              (= :one-way flight-type) {:value (:now state) :enabled? false}
-;                              (= :roundtrip flight-type) {:value (or return-date (:value departure-date) now) :enabled? true}
-;                              :else (throw (ex-info "Estado ilegal" {:estado state}))))
-;                          (catch js/Error e {:valid? false
-;                                             :value nil
-;                                             :error e})))]
-;     {::type flight-type
-;      ::departure-date departure-date
-;      ::return-date return-date
-;      ::button {:enabled? (every? true? [(:valid? departure-date) (:valid? return-date)])}}))
-; failed compiling constant: #'cider.nrepl.middleware.debug/breakpoint-if-interesting; clojure.lang.Var is not a valid ClojureScript constant.
-; 
-cljs꞉guis.flights꞉> 
-{:guis.flights/type :one-way, :guis.flights/departure-date {:value #time/date "2025-07-05", :valid? true}, :guis.flights/return-date {:valid? false, :value nil, :error #object[Error Error: No protocol method IExtraction.date defined for type null: ]}, :guis.flights/button {:enabled? false}}
-cljs꞉guis.flights-tests꞉> 
-nil
-; 
-; ------ REPL Error while processing ---------------------------------------------
-; #dbg
-; (defn get-form-state [state]
-;   (let [flight-type (if-let [t (::type state)]
-;                       t
-;                       :one-way)
-;         departure-date #?(:clj
-;                           (try
-;                             (if-let [d (::departure-date state)]
-;                               {:value (t/date d)
-;                                :valid? true}
-;                               {:value (t/date (:now state))
-;                                :valid? true})
-;                             (catch Exception e {:valid? false
-;                                                 :value nil
-;                                                 :error e}))
-;                           :cljs
-;                           (try
-;                             (if-let [d (::departure-date state)]
-;                               {:value (t/date d)
-;                                :valid? true}
-;                               {:value (t/date (:now state))
-;                                :valid? true})
-;                             (catch js/Error e {:valid? false
-;                                                :value nil
-;                                                :error e})))
-;         return-date #?(:clj
-;                        (try
-;                          (let [now (when (:now state) (t/date (:now state)))
-;                                return-date (when (::return-date state) (t/date (::return-date state)))]
-;                            (cond
-;                              (= :one-way flight-type) {:value (:now state) :enabled? false :valid? true}
-;                              (= :roundtrip flight-type) {:value (or return-date (:value departure-date) now) :enabled? true :valid? true}
-;                              :else (throw (ex-info "Estado ilegal" {:estado state}))))
-;                          (catch Exception e {:valid? false
-;                                              :value nil
-;                                              :error e}))
-;                        :cljs
-;                        (try
-;                          (let [now (t/date (:now state))
-;                                return-date (t/date (::return-date state))]
-;                            (cond
-;                              (= :one-way flight-type) {:value (:now state) :enabled? false}
-;                              (= :roundtrip flight-type) {:value (or return-date (:value departure-date) now) :enabled? true}
-;                              :else (throw (ex-info "Estado ilegal" {:estado state}))))
-;                          (catch js/Error e {:valid? false
-;                                             :value nil
-;                                             :error e})))]
-;     {::type flight-type
-;      ::departure-date departure-date
-;      ::return-date return-date
-;      ::button {:enabled? (every? true? [(:valid? departure-date) (:valid? return-date)])}}))
-; failed compiling constant: #'cider.nrepl.middleware.debug/breakpoint-if-interesting; clojure.lang.Var is not a valid ClojureScript constant.
-; 
-cljs꞉guis.flights꞉> 
 ; [:app] Compiling ...
 ; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,34s)
+; {:number 0, :guis.core/loaded-at 1748100618649}
+nil
+cljs꞉guis.dev꞉> 
+; {:number 3, :guis.core/loaded-at 1748100618649, :current-view :counter}
+nil
+cljs꞉guis.dev꞉> 
+; {:number 3, :guis.core/loaded-at 1748100618649, :current-view :temperatures, :celsius 56, :fahrenheit 132.8}
+nil
+cljs꞉guis.dev꞉> 
+; [:app] Compiling ...
+; [:app] Build completed. (179 files, 1 compiled, 0 warnings, 0,12s)
+; [:app] Compiling ...
+; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,26s)
+; [:app] Compiling ...
+; [:app] Build failure:
+; The namespace guis.flights cannot require itself!
+; {:ns guis.flights}
+; ExceptionInfo: The namespace guis.flights cannot require itself!
+; 	shadow.build.classpath/check-self-require! (classpath.clj:248)
+; 	shadow.build.classpath/check-self-require! (classpath.clj:246)
+; 	shadow.build.classpath/inspect-resource (classpath.clj:261)
+; 	shadow.build.classpath/inspect-resource (classpath.clj:252)
+; 	shadow.build.classpath/find-resource-by-name (classpath.clj:1080)
+; 	shadow.build.classpath/find-resource-by-name (classpath.clj:1071)
+; 	shadow.build.classpath/find-resource-for-provide (classpath.clj:1096)
+; 	shadow.build.classpath/find-resource-for-provide (classpath.clj:1090)
+; 	shadow.build.resolve/find-resource-for-symbol* (resolve.clj:554)
+; 	shadow.build.resolve/find-resource-for-symbol* (resolve.clj:544)
+; 	shadow.build.resolve/find-resource-for-symbol (resolve.clj:599)
+; 	shadow.build.resolve/find-resource-for-symbol (resolve.clj:593)
+; 	shadow.build.resolve/resolve-symbol-require (resolve.clj:653)
+; 	shadow.build.resolve/resolve-symbol-require (resolve.clj:649)
+; 	shadow.build.resolve/resolve-require (resolve.clj:699)
+; 	shadow.build.resolve/resolve-require (resolve.clj:695)
+; 	shadow.build.resolve/resolve-deps/fn--18653 (resolve.clj:52)
+; 	clojure.lang.PersistentVector.reduce (PersistentVector.java:418)
+; 	clojure.core/reduce (core.clj:6964)
+; 	clojure.core/reduce (core.clj:6947)
+; 	shadow.cljs.util/reduce-> (util.clj:42)
+; 	shadow.cljs.util/reduce-> (util.clj:41)
+; 	shadow.build.resolve/resolve-deps (resolve.clj:50)
+; 	shadow.build.resolve/resolve-deps (resolve.clj:34)
+; 	shadow.build.resolve/resolve-symbol-require (resolve.clj:689)
+; 	shadow.build.resolve/resolve-symbol-require (resolve.clj:649)
+; 	shadow.build.resolve/resolve-require (resolve.clj:699)
+; 	shadow.build.resolve/resolve-require (resolve.clj:695)
+; 	shadow.build.resolve/resolve-deps/fn--18653 (resolve.clj:52)
+; 	clojure.lang.PersistentVector.reduce (PersistentVector.java:418)
+; 	clojure.core/reduce (core.clj:6964)
+; 	clojure.core/reduce (core.clj:6947)
+; 	shadow.cljs.util/reduce-> (util.clj:42)
+; 	shadow.cljs.util/reduce-> (util.clj:41)
+; 	shadow.build.resolve/resolve-deps (resolve.clj:50)
+; 	shadow.build.resolve/resolve-deps (resolve.clj:34)
+; 	shadow.build.resolve/resolve-symbol-require (resolve.clj:689)
+; 	shadow.build.resolve/resolve-symbol-require (resolve.clj:649)
+; 	shadow.build.resolve/resolve-require (resolve.clj:699)
+; 	shadow.build.resolve/resolve-require (resolve.clj:695)
+; 	shadow.build.resolve/resolve-entry (resolve.clj:709)
+; 	shadow.build.resolve/resolve-entry (resolve.clj:708)
+; 	clojure.lang.PersistentVector.reduce (PersistentVector.java:418)
+; 	clojure.core/reduce (core.clj:6964)
+; 	clojure.core/reduce (core.clj:6947)
+; 	shadow.cljs.util/reduce-> (util.clj:42)
+; 	shadow.cljs.util/reduce-> (util.clj:41)
+; 	shadow.build.resolve/resolve-entries (resolve.clj:723)
+; 	shadow.build.resolve/resolve-entries (resolve.clj:714)
+; 	shadow.build.modules/resolve-module/fn--21571 (modules.clj:252)
+; 	shadow.build.modules/resolve-module (modules.clj:248)
+; 	shadow.build.modules/resolve-module (modules.clj:238)
+; 	clojure.lang.PersistentVector.reduce (PersistentVector.java:418)
+; 	clojure.core/reduce (core.clj:6964)
+; 	clojure.core/reduce (core.clj:6947)
+; 	shadow.build.modules/resolve-modules (modules.clj:258)
+; 	shadow.build.modules/resolve-modules (modules.clj:257)
+; 	shadow.build.modules/analyze (modules.clj:312)
+; 	shadow.build.modules/analyze (modules.clj:303)
+; 	shadow.build/resolve (build.clj:459)
+; 	shadow.build/resolve (build.clj:453)
+; 	shadow.build/compile (build.clj:509)
+; 	shadow.build/compile (build.clj:493)
+; 	shadow.cljs.devtools.server.worker.impl/build-compile (impl.clj:368)
+; 	shadow.cljs.devtools.server.worker.impl/build-compile (impl.clj:349)
+; 	shadow.cljs.devtools.server.worker.impl/do-resource-update (impl.clj:540)
+; 	shadow.cljs.devtools.server.worker.impl/do-resource-update (impl.clj:495)
+; 	shadow.cljs.devtools.server.util/server-thread/fn--23286/fn--23287/fn--23295 (util.clj:283)
+; 	shadow.cljs.devtools.server.util/server-thread/fn--23286/fn--23287 (util.clj:282)
+; 	shadow.cljs.devtools.server.util/server-thread/fn--23286 (util.clj:255)
+; 	java.lang.Thread.run (Thread.java:1447)
+; 
+; [:app] Compiling ...
+; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,24s)
+; [:app] Compiling ...
+; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,21s)
+; [:app] Compiling ...
+; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,33s)
+; {:number 0, :guis.core/loaded-at 1748102620171, :current-view :flights}
+nil
+cljs꞉guis.dev꞉> 
+; {:number 0, :guis.core/loaded-at 1748102620171, :current-view :flights}
+nil
+cljs꞉guis.dev꞉> 
+; [:app] Compiling ...
+; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,25s)
+#object [Date]
+cljs꞉guis.core꞉> 
+#object [Date]
+cljs꞉guis.core꞉> 
+#inst "2025-05-24T16:17:39.731-00:00"
+cljs꞉guis.core꞉> 
+; [:app] Compiling ...
+; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,17s)
+; [:app] Compiling ...
+; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,20s)
+; [:app] Compiling ...
+; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,37s)
+; [:app] Compiling ...
+; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,41s)
+; nREPL Connection was closed
+; Jacking in...
+; Connecting using "deps.edn + shadow-cljs" project type.
+; You can make Calva auto-select this.
+;   - See https://calva.io/connect-sequences/
+; 
+
+; Starting Jack-in: (cd /home/jrivero/replicant-project; clojure -Sdeps '{:deps {nrepl/nrepl {:mvn/version,"1.3.1"},cider/cider-nrepl {:mvn/version,"0.55.4"}}}' -M:dev -m nrepl.cmdline --middleware "[cider.nrepl/cider-middleware shadow.cljs.devtools.server.nrepl/middleware]")
+; Using host:port localhost:36959 ...
+; Hooking up nREPL sessions ...
+; Connected session: clj
+; Evaluating code from settings: 'calva.autoEvaluateCode.onConnect.clj'
+nil
+clj꞉user꞉> 
+; Creating cljs repl session...
+; Connecting cljs repl: deps.edn + shadow-cljs...
+; Starting cljs repl for: deps.edn + shadow-cljs...
+; shadow-cljs - HTTP server available at http://localhost:8090
+; [:app] Configuring build.
+; [:app] Compiling ...
+; [:app] Build completed. (179 files, 1 compiled, 0 warnings, 9,22s)
+; Cljs builds started
+; Connected session: cljs, repl: :app
+; TIPS: You can choose which REPL to use (clj or cljs):
+;    *Calva: Toggle REPL connection*
+;    (There is a button in the status bar for this)
+; Evaluating code from settings: 'calva.autoEvaluateCode.onConnect.cljs'
+nil
+cljs꞉user꞉> 
+; Jack-in done.
+cljs꞉user꞉> 
+; Evaluating file: flights_tests.cljc
+; 
+; ; cljs  guis.flights-tests 
+; ------ REPL Error while processing ---------------------------------------------
+; (cljs.core/load-file "/home/jrivero/replicant-project/tests/guis/flights_tests.cljc")
+; ------ REPL Error while processing ---------------------------------------------
+; (deftest render-form-test
+;   (testing "Takes user input on flight type select"
+;     (is )))
+; null
+; Wrong number of args (0) passed to: cljs.test/is
+nil
+cljs꞉guis.flights-tests꞉> 
+nil
+cljs꞉guis.flights-tests꞉> 
+; {}
+([:select {:class #{"select"}} [:option {:value "one-way"} "One-way"] [:option {:value "roundtrip"} "Roundtrip"]])
+cljs꞉guis.flights-tests꞉> 
+; {}
+{:class #{"select"}}
+cljs꞉guis.flights-tests꞉> 
+; {}
+nil
+cljs꞉guis.flights-tests꞉> 
+; [:app] Compiling ...
+; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,25s)
+; Evaluating file: core.cljs
+#'guis.core/init
+cljs꞉guis.core꞉> 
+; Evaluating file: flights_tests.cljc
+nil
+cljs꞉guis.flights-tests꞉> 
+; {}
+; 
+; FAIL in (render-form-test) (:90:9)
+; Takes user input on flight type select
+; expected: (= (->> (flights/render-form {}) (lookup/select-one :select) lookup/attrs :on :input) [[:action/assoc-in [:guis.flights/type] :event.target/value-as-keyword]])
+;   actual: (not (= nil [[:action/assoc-in [:guis.flights/type] :event.target/value-as-keyword]]))
+nil
+cljs꞉guis.flights-tests꞉> 
+; [:app] Compiling ...
+; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,38s)
 ; Evaluating file: flights.cljc
 nil
 cljs꞉guis.flights꞉> 
-{:guis.flights/type :one-way,
- :guis.flights/departure-date {:value #time/date "2025-07-05", :valid? true},
- :guis.flights/return-date {:value #time/date "2025-07-05", :enabled? false},
- :guis.flights/button {:enabled? false}}
+; [:app] Compiling ...
+; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,24s)
+; {}
+nil
+cljs꞉guis.flights-tests꞉> 
+; Evaluating file: flights_tests.cljc
+nil
+cljs꞉guis.flights-tests꞉> 
+; {}
+nil
+cljs꞉guis.flights-tests꞉> 
+; {}
+true
 cljs꞉guis.flights-tests꞉> 
 ; 
 ; Testing guis.flights-tests
+; {}
 ; 
-; FAIL in (get-form-state-test) (:35:9)
-; Uses entered return date
-; expected: (= (-> (flights/get-form-state {:guis.flights/return-date (. java.time.LocalDate parse "2025-12-01"), :guis.flights/type :roundtrip}) :guis.flights/return-date :value) (. java.time.LocalDate parse "2025-12-01"))
-;   actual: (not (= nil #time/date "2025-12-01"))
-; 
-; FAIL in (get-form-state-test) (:72:9)
-; Does not mark invalid return date for one-way flights
-; expected: (nil? (-> {:guis.flights/return-date "2025-12", :guis.flights/type :one-way} flights/get-form-state :guis.flights/return-date :valid?))
-;   actual: (not (nil? false))
-; 
-; Ran 1 tests containing 14 assertions.
-; 2 failures, 0 errors.
+; Ran 2 tests containing 16 assertions.
+; 0 failures, 0 errors.
 nil
 cljs꞉guis.flights-tests꞉> 
-{:guis.flights/type :roundtrip, :guis.flights/departure-date {:valid? false, :value nil, :error #object[Error Error: No protocol method IExtraction.date defined for type null: ]}, :guis.flights/return-date {:valid? false, :value nil, :error #object[Error Error: No protocol method IExtraction.date defined for type null: ]}, :guis.flights/button {:enabled? false}}
+; [:app] Compiling ...
+; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,20s)
+; Evaluating file: core.cljs
+#'guis.core/init
+cljs꞉guis.core꞉> 
+; [:app] Compiling ...
+; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,21s)
+; Evaluating file: flights_tests.cljc
+nil
 cljs꞉guis.flights-tests꞉> 
-{:guis.flights/type :roundtrip, :guis.flights/departure-date {:value #time/date "2025-11-01", :valid? true}, :guis.flights/return-date {:valid? false, :value nil, :error #object[Error Error: No protocol method IExtraction.date defined for type null: ]}, :guis.flights/button {:enabled? false}}
+; {}
+; {}
+; 
+; FAIL in (render-form-test) (:97:9)
+; Takes user input on departure date
+; expected: (= (->> (flights/render-form {}) (lookup/select-one "input[name=departure-date]") lookup/attrs :on :input) [[:action/assoc-in [:guis.flights/departure-date] :event.target/value]])
+;   actual: (not (= nil [[:action/assoc-in [:guis.flights/departure-date] :event.target/value]]))
+nil
 cljs꞉guis.flights-tests꞉> 
 ; [:app] Compiling ...
-; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,32s)
+; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,36s)
 ; Evaluating file: flights.cljc
 nil
 cljs꞉guis.flights꞉> 
 ; Evaluating file: flights_tests.cljc
 nil
 cljs꞉guis.flights-tests꞉> 
+; {}
+; {}
 ; 
-; Testing guis.flights-tests
-; 
-; FAIL in (get-form-state-test) (:73:9)
-; Does not mark invalid return date for one-way flights
-; expected: (nil? (-> {:guis.flights/return-date "2025-12", :guis.flights/type :one-way} flights/get-form-state :guis.flights/return-date :valid?))
-;   actual: (not (nil? false))
-; 
-; Ran 1 tests containing 14 assertions.
-; 1 failures, 0 errors.
+; FAIL in (render-form-test) (:97:9)
+; Takes user input on departure date
+; expected: (= (->> (flights/render-form {}) (lookup/select-one "input[name=departure-date]") lookup/attrs :on :input) [[:action/assoc-in [:guis.flights/departure-date] :event.target/value]])
+;   actual: (not (= nil [[:action/assoc-in [:guis.flights/departure-date] :event.target/value]]))
 nil
 cljs꞉guis.flights-tests꞉> 
-{:guis.flights/type :one-way, :guis.flights/departure-date {:valid? false, :value nil, :error #object[Error Error: No protocol method IExtraction.date defined for type null: ]}, :guis.flights/return-date {:valid? false, :value nil, :error #object[JsJodaException DateTimeParseException: Text '2025-12' could not be parsed at index 7: 2025-12, at index: 7]}, :guis.flights/button {:enabled? false}}
+; [:app] Compiling ...
+; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,26s)
+; Evaluating file: flights.cljc
+nil
+cljs꞉guis.flights꞉> 
+; Evaluating file: flights_tests.cljc
+nil
 cljs꞉guis.flights-tests꞉> 
-false
+; {}
+; {}
+nil
+cljs꞉guis.flights-tests꞉> 
+; 
+; Testing guis.flights-tests
+; {}
+; {}
+; 
+; Ran 2 tests containing 17 assertions.
+; 0 failures, 0 errors.
+nil
+cljs꞉guis.flights-tests꞉> 
+; [:app] Compiling ...
+; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,27s)
+; Evaluating file: flights.cljc
+nil
+cljs꞉guis.flights꞉> 
+; [:app] Compiling ...
+; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,20s)
+; Evaluating file: flights_tests.cljc
+nil
+cljs꞉guis.flights-tests꞉> 
+; 
+; Testing guis.flights-tests
+; {}
+; {}
+; {:guis.flights/departure-date {:valid false}}
+; 
+; FAIL in (render-form-test) (:104:10)
+; Marks invalid departure date
+; expected: (->> (flights/render-form {:guis.flights/departure-date {:valid false}}) (lookup/select-one "input[name=departure-date].input-error"))
+;   actual: nil
+; 
+; Ran 2 tests containing 18 assertions.
+; 1 failures, 0 errors.
+nil
 cljs꞉guis.flights-tests꞉> 
 ; [:app] Compiling ...
 ; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,27s)
@@ -285,77 +382,37 @@ nil
 cljs꞉guis.flights-tests꞉> 
 ; 
 ; Testing guis.flights-tests
+; {}
+; {}
+; {:guis.flights/departure-date {:valid false}}
 ; 
-; FAIL in (get-form-state-test) (:65:9)
-; Marks invalid return date
-; expected: (false? (-> (flights/get-form-state {:guis.flights/return-date "2025-12"}) :guis.flights/return-date :valid?))
-;   actual: (not (false? nil))
-; 
-; Ran 1 tests containing 14 assertions.
-; 1 failures, 0 errors.
-nil
-cljs꞉guis.flights-tests꞉> 
-nil
-cljs꞉guis.flights-tests꞉> 
-nil
-cljs꞉guis.flights-tests꞉> 
-nil
-cljs꞉guis.flights-tests꞉> 
-; [:app] Compiling ...
-; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,24s)
-; Evaluating file: flights.cljc
-nil
-cljs꞉guis.flights꞉> 
-; Evaluating file: flights_tests.cljc
-nil
-cljs꞉guis.flights-tests꞉> 
-; 
-; Testing guis.flights-tests
-; 
-; Ran 1 tests containing 14 assertions.
+; Ran 2 tests containing 18 assertions.
 ; 0 failures, 0 errors.
 nil
 cljs꞉guis.flights-tests꞉> 
-; Evaluating file: flights_tests.cljc
-nil
-cljs꞉guis.flights-tests꞉> 
-; 
-; Testing guis.flights-tests
-; 
-; Ran 1 tests containing 15 assertions.
-; 0 failures, 0 errors.
-nil
-cljs꞉guis.flights-tests꞉> 
-{:guis.flights/type :one-way,
- :guis.flights/departure-date {:value #time/date "2025-12-12", :valid? true},
- :guis.flights/return-date {:value nil, :enabled? false},
- :guis.flights/button {:enabled? false}}
-cljs꞉guis.flights-tests꞉> 
-{:guis.flights/type :roundtrip,
- :guis.flights/departure-date {:value #time/date "2025-12-12", :valid? true},
- :guis.flights/return-date {:value #time/date "2025-12-01", :enabled? true},
- :guis.flights/button {:enabled? false}}
-cljs꞉guis.flights-tests꞉> 
 ; [:app] Compiling ...
-; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,28s)
-; [:app] Compiling ...
-; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,17s)
+; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,20s)
 ; Evaluating file: flights.cljc
 nil
 cljs꞉guis.flights꞉> 
-; Evaluating file: flights_tests.cljc
+; [:app] Compiling ...
+; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,27s)
+; {}
+; {}
+; {:guis.flights/departure-date {:valid false}}
 nil
 cljs꞉guis.flights-tests꞉> 
 ; 
 ; Testing guis.flights-tests
+; {}
+; {}
+; {:guis.flights/departure-date {:valid false}}
 ; 
-; FAIL in (get-form-state-test) (:81:9)
-; Disables button when return date is before departure date
-; expected: (false? (-> (flights/get-form-state {:guis.flights/type :roundtrip, :guis.flights/return-date "2025-12-01", :guis.flights/departure-date "2025-12-12"}) :guis.flights/button :enabled?))
-;   actual: (not (false? true))
-; 
-; Ran 1 tests containing 15 assertions.
-; 1 failures, 0 errors.
+; Ran 2 tests containing 18 assertions.
+; 0 failures, 0 errors.
+nil
+cljs꞉guis.flights-tests꞉> 
+; {:guis.flights/return-date {:valid false}}
 nil
 cljs꞉guis.flights-tests꞉> 
 ; [:app] Compiling ...
@@ -363,46 +420,41 @@ cljs꞉guis.flights-tests꞉> 
 ; Evaluating file: flights.cljc
 nil
 cljs꞉guis.flights꞉> 
-; Evaluating file: flights_tests.cljc
-nil
-cljs꞉guis.flights-tests꞉> 
-{:guis.flights/type :roundtrip,
- :guis.flights/departure-date {:value #time/date "2025-12-12", :valid? true},
- :guis.flights/return-date {:value #time/date "2025-12-01", :enabled? true, :valid? true},
- :guis.flights/button {:enabled? false}}
-cljs꞉guis.flights-tests꞉> 
+#time/date "2025-05-24"
+cljs꞉guis.core꞉> 
+; [:app] Compiling ...
+; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,22s)
+; Evaluating file: core.cljs
+#'guis.core/init
+cljs꞉guis.core꞉> 
 ; [:app] Compiling ...
 ; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,20s)
+; [:app] Compiling ...
+; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,39s)
+; Evaluating file: flights_tests.cljc
+nil
+cljs꞉guis.flights-tests꞉> 
 ; 
 ; Testing guis.flights-tests
+; {}
+; {}
+; {:guis.flights/departure-date {:valid false}}
+; {}
 ; 
-; ERROR in (get-form-state-test) (:21:9)
-; Uses entered departure date
-; expected: (= (-> (flights/get-form-state {:guis.flights/departure-date (. java.time.LocalDate parse "2025-12-01")}) :guis.flights/departure-date :value) (. java.time.LocalDate parse "2025-12-01"))
-;   actual: #object[Error Error: No protocol method ITimeComparison.> defined for type null: ]
+; FAIL in (render-form-test) (:107:9)
+; Takes user input on return date
+; expected: (= (->> (flights/render-form {}) (lookup/select-one "input[name=return-date]") lookup/attrs :on :change) [[:action/assoc-in [:guis.flights/departure-date] :event.target/value]])
+;   actual: (not (= [[:action/assoc-in [:guis.flights/return-date] :event.target/value]] [[:action/assoc-in [:guis.flights/departure-date] :event.target/value]]))
+; {:guis.flights/return-date {:valid false}}
+; {}
 ; 
-; Ran 1 tests containing 15 assertions.
-; 0 failures, 1 errors.
-nil
-cljs꞉guis.flights-tests꞉> 
-; [:app] Compiling ...
-; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,20s)
-; Evaluating file: flights.cljc
-nil
-cljs꞉guis.flights꞉> 
-; Evaluating file: flights_tests.cljc
-nil
-cljs꞉guis.flights-tests꞉> 
-{:guis.flights/type :roundtrip,
- :guis.flights/departure-date {:value #time/date "2025-12-12", :valid? true},
- :guis.flights/return-date {:value #time/date "2025-12-01", :enabled? true, :valid? true},
- :guis.flights/button {:enabled? false}}
-cljs꞉guis.flights-tests꞉> 
-false
-cljs꞉guis.flights-tests꞉> 
-; [:app] Compiling ...
-; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,16s)
-; Evaluating file: flights_tests.cljc
+; FAIL in (render-form-test) (:117:9)
+; Clicking button books flight
+; expected: (= (->> (flights/render-form {}) (lookup/select-one "input[name=return-date]") lookup/attrs :on :click) [[:action/assoc-in [:guis.flights/booked?] true]])
+;   actual: (not (= nil [[:action/assoc-in [:guis.flights/booked?] true]]))
+; 
+; Ran 2 tests containing 21 assertions.
+; 2 failures, 0 errors.
 nil
 cljs꞉guis.flights-tests꞉> 
 ; Evaluating file: flights_tests.cljc
@@ -410,53 +462,45 @@ nil
 cljs꞉guis.flights-tests꞉> 
 ; 
 ; Testing guis.flights-tests
+; {}
+; {}
+; {:guis.flights/departure-date {:valid false}}
+; {}
+; {:guis.flights/return-date {:valid false}}
+; {}
 ; 
-; ERROR in (get-form-state-test) (:8:9)
-; Defaults to one-way flight
-; expected: (= (-> (flights/get-form-state {}) :guis.flights/type) :one-way)
-;   actual: #object[Error Error: No protocol method ITimeComparison.> defined for type null: ]
+; FAIL in (render-form-test) (:117:9)
+; Clicking button books flight
+; expected: (= (->> (flights/render-form {}) (lookup/select-one "input[name=return-date]") lookup/attrs :on :click) [[:action/assoc-in [:guis.flights/booked?] true]])
+;   actual: (not (= nil [[:action/assoc-in [:guis.flights/booked?] true]]))
 ; 
-; ERROR in (get-form-state-test) (:12:9)
-; Uses selected flight type
-; expected: (= (-> (flights/get-form-state {:guis.flights/type :roundtrip}) :guis.flights/type) :roundtrip)
-;   actual: #object[Error Error: No protocol method ITimeComparison.> defined for type null: ]
-; 
-; ERROR in (get-form-state-test) (:21:9)
-; Uses entered departure date
-; expected: (= (-> (flights/get-form-state {:guis.flights/departure-date (. java.time.LocalDate parse "2025-12-01")}) :guis.flights/departure-date :value) (. java.time.LocalDate parse "2025-12-01"))
-;   actual: #object[Error Error: No protocol method ITimeComparison.> defined for type null: ]
-; 
-; ERROR in (get-form-state-test) (:26:9)
-; Marks invalid departure date
-; expected: (false? (-> (flights/get-form-state {:guis.flights/departure-date "2025-12"}) :guis.flights/departure-date :valid?))
-;   actual: #object[Error Error: No protocol method ITimeComparison.> defined for type null: ]
-; 
-; ERROR in (get-form-state-test) (:50:9)
-; Disables button when departure date is invalid
-; expected: (false? (-> (flights/get-form-state {:guis.flights/departure-date "2025-12"}) :guis.flights/button :enabled?))
-;   actual: #object[Error Error: No protocol method ITimeComparison.> defined for type null: ]
-; 
-; ERROR in (get-form-state-test) (:65:9)
-; Marks invalid return date
-; expected: (false? (-> (flights/get-form-state {:guis.flights/departure-date (. java.time.LocalDate parse "2025-12-01"), :guis.flights/type :roundtrip, :guis.flights/return-date "2025-12"}) :guis.flights/return-date :valid?))
-;   actual: #object[Error Error: No protocol method ITimeComparison.> defined for type null: ]
-; 
-; ERROR in (get-form-state-test) (:71:9)
-; Disables button when return date is invalid
-; expected: (false? (-> (flights/get-form-state {:guis.flights/return-date "2025-12"}) :guis.flights/button :enabled?))
-;   actual: #object[Error Error: No protocol method ITimeComparison.> defined for type null: ]
-; 
-; ERROR in (get-form-state-test) (:75:9)
-; Does not mark invalid return date for one-way flights
-; expected: (nil? (-> {:guis.flights/return-date "2025-12", :guis.flights/type :one-way} flights/get-form-state :guis.flights/return-date :valid?))
-;   actual: #object[Error Error: No protocol method ITimeComparison.> defined for type null: ]
-; 
-; Ran 1 tests containing 15 assertions.
-; 0 failures, 8 errors.
+; Ran 2 tests containing 21 assertions.
+; 1 failures, 0 errors.
 nil
 cljs꞉guis.flights-tests꞉> 
 ; [:app] Compiling ...
-; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,20s)
+; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,21s)
+; Evaluating file: flights_tests.cljc
+nil
+cljs꞉guis.flights-tests꞉> 
+; 
+; Testing guis.flights-tests
+; {}
+; {}
+; {:guis.flights/departure-date {:valid false}}
+; {}
+; {:guis.flights/return-date {:valid false}}
+; {}
+; 
+; FAIL in (render-form-test) (:117:9)
+; Clicking button books flight
+; expected: (= (->> (flights/render-form {}) (lookup/select-one "input[name=return-date]") lookup/attrs :on :click) [[:action/assoc-in [:guis.flights/booked?] true]])
+;   actual: (not (= nil [[:action/assoc-in [:guis.flights/booked?] true]]))
+; 
+; Ran 2 tests containing 21 assertions.
+; 1 failures, 0 errors.
+nil
+cljs꞉guis.flights-tests꞉> 
 ; Evaluating file: flights.cljc
 nil
 cljs꞉guis.flights꞉> 
@@ -465,106 +509,51 @@ nil
 cljs꞉guis.flights-tests꞉> 
 ; 
 ; Testing guis.flights-tests
+; {}
+; {}
+; {:guis.flights/departure-date {:valid false}}
+; {}
+; {:guis.flights/return-date {:valid false}}
+; {}
 ; 
-; ERROR in (get-form-state-test) (:21:9)
-; Uses entered departure date
-; expected: (= (-> (flights/get-form-state {:guis.flights/departure-date (. java.time.LocalDate parse "2025-12-01")}) :guis.flights/departure-date :value) (. java.time.LocalDate parse "2025-12-01"))
-;   actual: #object[Error Error: No protocol method ITimeComparison.> defined for type null: ]
+; FAIL in (render-form-test) (:117:9)
+; Clicking button books flight
+; expected: (= (->> (flights/render-form {}) (lookup/select-one "input[name=return-date]") lookup/attrs :on :click) [[:action/assoc-in [:guis.flights/booked?] true]])
+;   actual: (not (= nil [[:action/assoc-in [:guis.flights/booked?] true]]))
 ; 
-; Ran 1 tests containing 15 assertions.
-; 0 failures, 1 errors.
+; Ran 2 tests containing 21 assertions.
+; 1 failures, 0 errors.
 nil
 cljs꞉guis.flights-tests꞉> 
-:repl/exception!
-; 
-; 
-; Execution error (Error) at (<cljs repl>:1).
-; No protocol method ITimeComparison.> defined for type null: 
-cljs꞉guis.flights-tests꞉> 
-; [:app] Compiling ...
-; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,20s)
-; Evaluating file: flights.cljc
-nil
-cljs꞉guis.flights꞉> 
-; Evaluating file: flights_tests.cljc
-nil
+#'guis.flights-tests/render-form-test
 cljs꞉guis.flights-tests꞉> 
 ; 
 ; Testing guis.flights-tests
+; {}
+; {}
+; {:guis.flights/departure-date {:valid false}}
+; {}
+; {:guis.flights/return-date {:valid false}}
+; {}
 ; 
-; ERROR in (get-form-state-test) (:21:9)
-; Uses entered departure date
-; expected: (= (-> (flights/get-form-state {:guis.flights/departure-date (. java.time.LocalDate parse "2025-12-01")}) :guis.flights/departure-date :value) (. java.time.LocalDate parse "2025-12-01"))
-;   actual: #object[Error Error: No protocol method ITimeComparison.> defined for type null: ]
-; 
-; Ran 1 tests containing 15 assertions.
-; 0 failures, 1 errors.
-nil
-cljs꞉guis.flights-tests꞉> 
-:repl/exception!
-; 
-; 
-; Execution error (Error) at (<cljs repl>:1).
-; No protocol method ITimeComparison.> defined for type null: 
-cljs꞉guis.flights-tests꞉> 
-; Evaluating file: flights.cljc
-nil
-cljs꞉guis.flights꞉> 
-; Evaluating file: flights_tests.cljc
-nil
-cljs꞉guis.flights-tests꞉> 
-:repl/exception!
-; 
-; 
-; Execution error (Error) at (<cljs repl>:1).
-; No protocol method ITimeComparison.> defined for type null: 
-cljs꞉guis.flights-tests꞉> 
-; Evaluating file: flights.cljc
-nil
-cljs꞉guis.flights꞉> 
-; Syntax error compiling at (src/guis/flights.cljc:5:1).
-; Unable to resolve symbol: defn in this context
-clj꞉guis.flights꞉> 
-; Evaluating file: flights.cljc
-nil
-cljs꞉guis.flights꞉> 
-; [:app] Compiling ...
-; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,16s)
-; Evaluating file: flights.cljc
-nil
-cljs꞉guis.flights꞉> 
-{:guis.flights/type :one-way,
- :guis.flights/departure-date {:value #time/date "2025-12-01", :valid? true},
- :guis.flights/return-date {:value nil, :enabled? false, :valid? true},
- :guis.flights/button {:enabled? x}}
-cljs꞉guis.flights-tests꞉> 
-; [:app] Compiling ...
-; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,24s)
-; Evaluating file: flights.cljc
-nil
-cljs꞉guis.flights꞉> 
-; Evaluating file: flights_tests.cljc
-nil
-cljs꞉guis.flights-tests꞉> 
-; 
-; Testing guis.flights-tests
-; 
-; Ran 1 tests containing 15 assertions.
+; Ran 2 tests containing 21 assertions.
 ; 0 failures, 0 errors.
 nil
 cljs꞉guis.flights-tests꞉> 
 ; [:app] Compiling ...
-; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,37s)
+; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,52s)
+; [:app] Compiling ...
+; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,30s)
+; [:app] Compiling ...
+; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,22s)
+; [:app] Compiling ...
+; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,22s)
+; [:app] Compiling ...
+; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,16s)
+; [:app] Compiling ...
+; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,33s)
 ; Evaluating file: flights.cljc
 nil
 cljs꞉guis.flights꞉> 
-; Evaluating file: flights_tests.cljc
-nil
-cljs꞉guis.flights-tests꞉> 
-; 
-; Testing guis.flights-tests
-; 
-; Ran 1 tests containing 15 assertions.
-; 0 failures, 0 errors.
-nil
-cljs꞉guis.flights-tests꞉> 
+; [:app] Compiling ...
+; [:app] Build completed. (179 files, 2 compiled, 0 warnings, 0,31s)
