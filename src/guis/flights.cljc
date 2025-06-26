@@ -115,6 +115,11 @@
 
   (format-date (java.time.Instant/now))
 
+  (time (get-form-state {::type :roundtrip
+                         ::return-date "2025-12-01"
+                         ::departure-date "2025-12-12"}))
+
+
 
   (let [state {}]
     (cond-> {}
@@ -125,19 +130,19 @@
 
   ;; WTF!!
   (format-date #inst "2025-05-07") ;=> "2025-07-04"
-  
+
   (apply str ((juxt t/year t/month t/day-of-month) (t/instant)))
 
   (t/day-of-month (t/instant #inst "2025-05-07T10:00:00.00Z"))
 
-  (let [f (fn [a] (assoc a :a 1))] 
+  (let [f (fn [a] (assoc a :a 1))]
     (cond-> {}
       true f))
-  
+
   #?(:clj (try
-          (throw (ex-info "Exception loca" {:m 'm}))
-          (catch Exception e {:a 1})))
-   
- 
+            (throw (ex-info "Exception loca" {:m 'm}))
+            (catch Exception e {:a 1})))
+
+
   :rfc
   )
